@@ -1,0 +1,39 @@
+﻿@using FederatedIPWeb.App_Start;
+@using SharedServices.Configuration
+@using SharedServices.FederatedAuth.Principal
+@{
+    IConfigurationService ApplicationConfiguration = ViewBag.__ApplicationConfiguration;
+    Version ApplicationVersion = ViewBag.ApplicationVersion;
+}
+    <footer>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ApplicationFooterNav" aria-controls="ApplicationFooterNav" aria-expanded="false" aria-label="Toggle footer navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="ApplicationFooterNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link py-0" href="#"><small>My Link 1</small></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link py-0" href="#"><small>My Link 2</small></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link py-0" href="#"><small>My Link 3</small></a>
+                    </li>
+
+                </ul>
+            </div>
+        </nav>
+        <nav class="navbar navbar-light bg-light  py-0 border-top">
+            <div class="w-100">
+                <ul class="navbar-nav text-center w-100">
+                    <li class="nav-item">
+                        <small class="nav-link py-0">&copy; @DateTime.Now.Year - @ApplicationConfiguration.WebPageConfiguration.Title - Version - @ApplicationVersion</small>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </footer>
+

@@ -1,0 +1,359 @@
+﻿@import "_variables.scss";
+@import "_input.scss";
+@import "_select.scss";
+
+ul.bs-validation-list {
+    list-style-type: none;
+    padding-left: 0;
+
+    > li.bs-validation-item > p.bs-validation-error {
+        padding-left: 0.5rem;
+    }
+}
+
+$form-control-prefix: "bs" !default;
+
+@function form-control-selector($type: "", $prefix:".", $wildcard:false) {
+    $base-selector: $prefix +$form-control-prefix +"-form-control";
+    @if($type == "") {        
+        @if($wildcard==true){
+            @return $base-selector+ "*";
+        }
+        @return $base-selector;
+    }
+    @if($wildcard==true) {
+        @return $base-selector +"-"+ $type+"*";
+    }
+    @return $base-selector +"-"+ $type;
+}
+
+
+
+
+$form-control-border-color: #ced4da;
+$form-color: #495057;
+$form-background-color: #fff;
+
+$bs-form-size-xs: 0.25 !default;
+$bs-form-size-sm: 0.5 !default;
+$bs-form-size-md: 0.75 !default;
+$bs-form-size-lg: 1 !default;
+$bs-form-size-xl: 1.25 !default;
+
+$bs-form-size-default: $bs-form-size-md !default;
+$bs-form-size: () !default;
+
+$bs-form-size-base: ( "xs": $bs-form-size-xs, "sm": $bs-form-size-sm, "md": $bs-form-size-md, "lg": $bs-form-size-lg, "xl": $bs-form-size-xl ) !default;
+$bs-form-size: map-merge( $bs-form-size-base, $bs-form-size );
+
+$bs-form-control-status: () !default;
+$bs-form-control-status-base: ( "valid": $success, "invalid": $danger, "active":$primary, "required":$orange ) !default;
+$bs-form-control-status: map-merge( $bs-form-control-status-base, $bs-form-control-status);
+
+$bs-form-border-radius-round: 1.2rem !default;
+
+@mixin form-control-size-padding($size: $bs-form-size-default, $side: "all") {
+    $padding-x: $size;
+    $padding-y: $padding-x/2;
+
+    @if($side=="x") {
+        padding-left: #{$padding-x}rem;
+        padding-right: #{$padding-x}rem;
+    }
+    @elseif($side=="y") {
+        padding-top: #{$padding-y}rem;
+        padding-bottom: #{$padding-y}rem;
+    }
+    @elseif($side=="left" or $side=="right") {
+        padding-#{$side}: #{$padding-x}rem;
+    }
+    @elseif($side=="top" or $side=="bottom") {
+        padding-#{$side}: #{$padding-y}rem;
+    }
+    @else {
+        padding: #{$padding-y}rem #{$padding-x}rem;
+    }
+}
+@mixin form-control-size($size: $bs-form-size-default) {
+    $padding-x: $size;
+    $padding-y: $padding-x/2;
+    $font-size: ($size*$size)-(0.75*$size) + 1;
+    height: calc(1.5em + #{$size}rem + 2px);
+    @include form-control-size-padding($size);
+    font-size: #{$font-size}em;
+}
+@each $name, $size in $bs-form-size {
+    $font-size: ($size*$size)-(0.75*$size) + 1;
+    #{form-control-selector("label-"+ $name)} {
+        @include form-control-size-padding($size*2,"left");
+        @include form-control-size-padding(0.5,"y");
+        font-size: #{$font-size}em;
+    }
+    #{form-control-selector("text-"+ $name)} {
+        @include form-control-size-padding($size*2,"left");
+        @include form-control-size-padding(0.5,"y");
+        font-size: #{($font-size)*0.75}em;
+    }
+}
+#{form-control-selector("label")} {
+    $font-size: (($bs-form-size-default*$bs-form-size-default)-(0.75*$bs-form-size-default) + 1)*0.75;
+    @include form-control-size-padding($bs-form-size-default*2,"left");
+    @include form-control-size-padding(0.5,"y");
+    font-size: #{$font-size}em;
+    font-weight: bold;
+
+    &.required:after {
+        content: "*";
+        padding-left: 0.25rem;
+        color: $orange;
+    }
+}
+#{form-control-selector("text")} {
+    $font-size: (($bs-form-size-default*$bs-form-size-default)-(0.75*$bs-form-size-default) + 1)*0.75;
+    @include form-control-size-padding($bs-form-size-default*2,"left");
+    @include form-control-size-padding(0.5,"y");
+    font-size: #{$font-size}em;
+}
+@each $name, $color in $bs-form-control-status {
+    #{form-control-selector("text-"+ $name)} {
+        color: $color;
+    }
+}
+#{form-control-selector()} {
+    @include form-control-size();
+    display: block;
+    width: 100%;
+    font-weight: 400;
+    line-height: 1.5;
+    color: $form-color;
+    background-color: $form-background-color;
+    background-clip: padding-box;
+    border: 1px solid $form-control-border-color;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+    &:focus {
+        outline: none;
+    }
+
+    &#{form-control-selector("round")} {
+        border-radius: 1rem;
+    }
+
+    @each $name, $size in $bs-form-size {
+        &#{form-control-selector($name)} {
+            @include form-control-size($size);
+        }
+    }
+
+    @each $name, $color in $bs-form-control-status {
+        @if($name == 'invalid') {
+            &.#{$name} {
+                box-shadow: 0 0 0 0.2rem rgba($color, 0.25);
+                border-top-color: $color;
+            }
+        }
+        @else {
+            &.#{$name}:not(.invalid) {
+                box-shadow: 0 0 0 0.2rem rgba($color, 0.25);
+                border-top-color: $color;
+            }
+        }
+    }
+}
+#{form-control-selector("group")} {
+    $group-item-selector: "[class^=\"" + form-control-selector("","") + "\"]";
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    width: 100%;
+    border-radius: .25rem;
+
+    &#{form-control-selector("round")},
+    &#{form-control-selector("round")} > #{form-control-selector()},
+    &#{form-control-selector("round")} > #{$group-item-selector} {
+        border-radius: $bs-form-border-radius-round;
+    }
+
+    > #{$group-item-selector} {
+        @include form-control-size();
+        height: auto;
+        transition: all .15s ease-in-out,box-shadow .15s ease-in-out;
+
+        &#{form-control-selector("bg-status")}:not(#{form-control-selector("flush")} ) {
+            background-color: lighten($secondary, 40%);
+            color: color-yiq(lighten($secondary, 40%));
+        }
+    }
+
+    @each $name, $color in $bs-form-control-status {
+
+
+        @if($name == 'invalid') {
+            &.#{$name} {
+                box-shadow: 0 0 0 0.2rem rgba($color, 0.25);
+
+                > #{$group-item-selector},
+                > #{form-control-selector()} {
+                    &#{form-control-selector("bg-status")}:not(#{form-control-selector("flush")} ) {
+                        background-color: lighten($color, 10%);
+                        color: color-yiq(lighten($color, 10%));
+                    }
+
+                    border-top-color: $color;
+                    border-bottom-color: $color;
+
+                    &:first-child {
+                        border-left-color: $color;
+                    }
+
+                    &:last-child {
+                        border-right-color: $color;
+                    }
+                }
+            }
+        }
+        @else {
+            &.#{$name}:not(.invalid) {
+                box-shadow: 0 0 0 0.2rem rgba($color, 0.25);
+
+                > #{$group-item-selector},
+                > #{form-control-selector()} {
+                    &#{form-control-selector("bg-status")}:not(#{form-control-selector("flush")} ) {
+                        background-color: lighten($color, 10%);
+                        color: color-yiq(lighten($color, 10%));
+                    }
+
+                    border-top-color: $color;
+                    border-bottom-color: $color;
+
+                    &:first-child {
+                        border-left-color: $color;
+                    }
+
+                    &:last-child {
+                        border-right-color: $color;
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    &.focus-in {
+        box-shadow: 0 0 0 0.2rem rgba($primary, 0.25);
+
+        > #{$group-item-selector},
+        > #{form-control-selector()} {
+            &#{form-control-selector("bg-status")}:not(#{form-control-selector("flush")} ) {
+                background-color: lighten($primary, 10%);
+                color: color-yiq(lighten($primary, 10%));
+            }
+
+            border-top-color: $primary;
+            border-bottom-color: $primary;
+
+            &:first-child {
+                border-left-color: $primary;
+            }
+
+            &:last-child {
+                border-right-color: $primary;
+            }
+        }
+    }
+
+
+    #{form-control-selector("group-prepend")},
+    #{form-control-selector("group-append")},
+    #{form-control-selector("clear")} {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+        font-weight: 400;
+        line-height: 1.5;
+        text-align: center;
+        white-space: nowrap;
+        border-radius: inherit;
+        border: 1px solid $form-control-border-color;
+    }
+
+
+
+    > #{form-control-selector("flush")} {
+
+        &:not(:first-child) {
+            border-left: 0;
+            padding-left: 0.25rem;
+        }
+
+        &:not(:last-child) {
+            border-right: 0;
+            padding-right: 0.25rem;
+        }
+    }
+
+    #{form-control-selector("group-prepend")} {
+        border-right: 0;
+
+        &:first-child {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        &:not(:first-child) {
+            border-radius: 0;
+        }
+    }
+
+    #{form-control-selector("group-append")} {
+        border-left: 0;
+
+        &:last-child {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        &:not(:last-child) {
+            border-radius: 0;
+        }
+    }
+
+
+
+    > #{form-control-selector()} {
+        position: relative;
+        flex: 1 1 0%;
+        min-width: 0;
+        margin-bottom: 0;
+        border-radius: inherit;
+
+        &:not(:first-child) {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        &:not(:last-child) {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+    }
+
+    > #{form-control-selector("clear")} {
+        color: $form-color;
+        background-color: $form-background-color;
+        border: 1px solid $form-control-border-color;
+    }
+
+
+
+
+    @each $name, $size in $bs-form-size {
+
+        &#{form-control-selector("group-"+$name)} > #{$group-item-selector} {
+            @include form-control-size($size);
+        }
+    }
+}

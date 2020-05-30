@@ -1,0 +1,397 @@
+﻿@using SharedServices.Configuration
+@{
+    IConfigurationService ApplicationConfiguration = ViewBag.__ApplicationConfiguration;
+}
+@if (ApplicationConfiguration.WebPageConfiguration.EnableWarningModal)
+{
+    Html.RenderPartial("_WarningModal");
+}
+@{ 
+    Html.RenderPartial("_ApplicationModal");
+}
+<a id="__AjaxPageLoadLink" href="#" class="d-none"></a>
+<form id="__AjaxAntiForgeryForm" action="#" method="post" class="d-none">@Html.AntiForgeryToken()></form>
+@*@Html.Hidden("__InactivityTimout", ApplicationConfiguration.UsingFederatedAuth ? ApplicationConfiguration.FederatedIPAuthentication.Timeout : 15, new { @id = "__InactivityTimout" })*@
+
+
+<script type="text/javascript">
+    var appConfigStr = '@Html.Raw(ViewBag.__ApplicationPageConfigurationJson)';
+    var appConfig = JSON.parse(appConfigStr);
+    var RESET_TIMER_EVENT = '__resetInactivityTimout';
+    var __AjaxPageLoadLink = $("#__AjaxPageLoadLink");
+
+    var __AjaxAntiForgeryFormData = $('#__AjaxAntiForgeryForm').serializeArray()[0];
+    var __AjaxAntiForgeryFormDataJSON = {};
+    __AjaxAntiForgeryFormDataJSON[__AjaxAntiForgeryFormData.name] = __AjaxAntiForgeryFormData.value;
+
+    $.fn._serializeToJson = function () {
+        var json = {};
+        $.each($(this).serializeArray(), function (index, formControl) {
+            if (typeof json[formControl.name] !== 'undefined') {
+                json[formControl.name] = json[formControl.name].trim() + ',' + formControl.value.trim();
+            } else {
+                json[formControl.name] = formControl.value.trim();
+            }
+        });
+        json = $.extend(json, __AjaxAntiForgeryFormDataJSON)
+        return json;
+    };
+    $.fn.formVal = function () {
+        if ($(this).is('form')) {
+            return $(this)._serializeToJson();
+        }
+        return null;
+    };
+
+    $.GoToLink = function (url, data) {
+        var linkUrl = url;
+        if (typeof data === 'object' && data !== null && Object.keys(data).length > 0) {
+            linkUrl = linkUrl + '?' + $.param(data);
+        }
+        __AjaxPageLoadLink.attr("href", linkUrl);
+        __AjaxPageLoadLink[0].click();
+    };
+    $.Logout = function () { $.GoToLink(appConfig.LogoutUrl); }
+
+    $.ajaxSetup({
+        data: __AjaxAntiForgeryFormDataJSON
+    });
+    $(document).ajaxError(function (event, jqxhr, settings, thrownError) {
+        if (jqxhr.status === appConfig.HttpStatusCode.Forbidden && appConfig.AuthenticatedPage) {
+            $.Logout();
+        }
+    }).ajaxComplete(function () {
+        if (appConfig.UseTimeout) {
+            $(document).trigger(RESET_TIMER_EVENT, true);
+        }
+    });
+    var InitApplicationModal = function () {
+        var modal = $(document).find('[data-application-modal="modal"]');
+        var modalDialog = modal.find('[data-application-modal="dialog"]');
+        var modalHeader = modal.find('[data-application-modal="header"]');
+        var modalBody = modal.find('[data-application-modal="body"]');
+        var modalFooter = modal.find('[data-application-modal="footer"]');
+        var modalTitle = modal.find('[data-application-modal="title"]');
+        var modalClose = modal.find('[data-application-modal="close"]');
+
+        $.ApplicationModal = {
+            show: function (options) {
+                if (modal.hasClass('show')) {
+                    modal.one('hidden.bs.modal', function () {
+                        modalTitle.text('');
+                        modalBody.empty();
+                        modalFooter.empty();
+                        $.ApplicationModal.show(options);
+                    });
+                    modal.modal('hide');                    
+                    return;
+                }
+                options = $.extend({
+                    title: '',
+                    classes: '',
+                    dismissable: true,
+                    static: false,
+                    content: '<span>Loading...</span>',
+                    url: null,
+                    done: function () { },
+                    data: {}
+                }, options || {});
+                modalTitle.text(options.title);
+                modalBody.html(options.content);
+                modalFooter.addClass('d-none');
+                modalDialog.attr('class', 'modal-dialog ' + options.classes);
+
+                if (options.dismissable === true) {
+                    modalClose.removeClass('d-none');
+
+                } else {
+                    modalClose.addClass('d-none');
+                }
+                modal.modal('hide');
+                modal.modal('dispose');
+                var modalOptions = { keyboard: !options.static };
+                if (options.static === true) {
+                    modalOptions.backdrop = 'static'
+                }
+                modal.modal(modalOptions);
+                var checkContent = function () {
+                    modalBody = modal.find('[data-application-modal="body"]');
+                    var footerContent = modalBody.find('[data-modal="footer"]');
+                    if (footerContent.length > 0) {
+                        footerContent.removeAttr('data-modal');
+                        footerContent.appendTo(modalFooter);
+                        modalFooter.removeClass('d-none');
+                    }
+                    if (typeof options.done === 'function') {
+                        options.done();
+                    }
+                };
+                if (options.url !== null) {
+                    modalBody.LoadView(options.url, options.data, checkContent);
+                } else {
+                    modal.one('shown.bs.modal', checkContent);
+                }
+                modal.one('hidden.bs.modal', function () {
+                    modalTitle.text('');
+                    modalBody.empty();
+                    modalFooter.empty();
+                });
+                modal.modal('show');
+            },
+            hide: function () {
+                modal.modal('hide');                
+            }
+        }
+    };
+    var InitAuthenticatedTimeout = function () {
+       
+        var LOGOUT_EVENT = '__logout';
+        var RESUME_ACTIVITY_EVENT = '__resumeActivity';
+        var __enableClickListener = true;
+        var __ApplicationTimoutModal = null;
+        var __ApplicationTimoutModalCounter = null;
+        var SetCounterTimeLeft = function () { };
+        if (appConfig.ApplicationConfiguration.WebPageConfiguration.EnableWarningModal) {
+            
+            __ApplicationTimoutModal = $('.modal[data-warning-modal="modal"]');
+            __ApplicationTimoutModalCounter = __ApplicationTimoutModal.find('[data-warning-modal="counter"]');
+            var __ApplicationTimoutModalLogout = __ApplicationTimoutModal.find('[data-warning-modal="logout"]');
+            var __ApplicationTimoutModalResume = __ApplicationTimoutModal.find('[data-warning-modal="resume"]');
+
+            __ApplicationTimoutModal.on('show.bs.modal', function (e) {
+                __enableClickListener = false;
+                __ApplicationTimoutModalLogout.on('click', function () {
+                    $(document).trigger(LOGOUT_EVENT);
+                });
+                __ApplicationTimoutModalResume.on('click', function () {
+                    $(document).trigger(RESUME_ACTIVITY_EVENT);
+                });
+            }).on('hidden.bs.modal', function (e) {
+                __enableClickListener = true;
+                __ApplicationTimoutModalLogout.off('click');
+                __ApplicationTimoutModalResume.off('click');
+            });
+            var ToReadableTimeElement = function (timeElement, parentTimeElement) {
+                if (timeElement < 10 && parentTimeElement > 0) {
+                    return '0' + timeElement;
+                }
+                return timeElement
+            };
+            SetCounterTimeLeft = function (millisecondsLeft) {
+                var baseMs = millisecondsLeft;
+                var ms = baseMs % 1000;
+                var baseMs = (baseMs - ms) / 1000;
+                var secs = baseMs % 60;
+                baseMs = (baseMs - secs) / 60;
+                var mins = baseMs % 60;
+                var hrs = (baseMs - mins) / 60;
+
+                var time = '';
+                if (hrs > 0) {
+                    time = time + hrs + ':';
+                }
+                if (mins > 0 || hrs > 0) {
+                    time = time + ToReadableTimeElement(mins, hrs) + ':';
+                }
+                if (secs >= 0 || mins > 0 || hrs > 0) {
+                    time = time + ToReadableTimeElement(secs, mins);
+                }
+                if (secs <= 10 && mins === 0 && hrs === 0) {
+                    __ApplicationTimoutModalCounter.addClass('text-danger');
+                }
+                __ApplicationTimoutModalCounter.text(time);
+            };            
+        }
+        if (appConfig.UseTimeout) {
+            var start = Date.now();
+            var getInactivityTimerHandler = function (reset) {
+                if (reset === true) {
+                    start = Date.now();
+                }
+                var warningCheck = null;
+                if (appConfig.ApplicationConfiguration.WebPageConfiguration.EnableWarningModal) {
+                    var counterVal = appConfig.TimeoutConfig.Timeout;
+                    var ShowModalAt = appConfig.TimeoutConfig.Timeout - appConfig.TimeoutConfig.WarningTimeout;
+                    var warningCheck = setInterval(function () {
+                        if (counterVal > 0) {
+                            counterVal = counterVal - 1000;
+                            if (counterVal <= ShowModalAt) {
+                                if (counterVal === ShowModalAt) {
+                                    __ApplicationTimoutModal.modal('show');
+                                    SetCounterTimeLeft(ShowModalAt);
+                                } else {
+                                    SetCounterTimeLeft(counterVal);
+                                }
+                            }
+                        }
+                    }, 1000);
+                }
+                var clearWarningCheck = function () {
+                    if (appConfig.ApplicationConfiguration.WebPageConfiguration.EnableWarningModal) {
+                        clearInterval(warningCheck);
+                    }
+                };
+                var timer = window.setTimeout(function () {
+                    clearWarningCheck();
+                    $.Logout();
+                }, appConfig.TimeoutConfig.Timeout);
+                return {
+                    stop: function () {
+                        window.clearTimeout(timer);
+                        clearWarningCheck();
+                        return Date.now() - start;
+                    }
+                };
+            };
+            var clickArea = $(document).find('[data-activity-area="true"]');
+            if (clickArea.length === 0) {
+                clickArea = $(document);
+            }
+            var clickHandler = getInactivityTimerHandler();
+            $(document).on(RESET_TIMER_EVENT, function (e, reset) {
+                var elapsedTime = clickHandler.stop();
+                if (reset === true) {
+                    clickHandler = getInactivityTimerHandler(true);
+                }
+                else if (elapsedTime >= appConfig.TimeoutConfig.RefreshThreshold) {
+                    $.get(appConfig.RefreshUrl);
+                } else {
+                    clickHandler = getInactivityTimerHandler(false);
+                }
+            });
+            clickArea.on('click', function (event) {
+                var clickInIgnorableArea = $(event.target).closest('[data-activity-area="false"]').length > 1;
+                if (clickInIgnorableArea === false && __enableClickListener === true) {
+                    $(document).trigger(RESET_TIMER_EVENT);
+                }
+            });
+            $(document).on(LOGOUT_EVENT, function (event) {
+                clickHandler.stop();
+                $.Logout();
+            }).on(RESUME_ACTIVITY_EVENT, function (event) {
+                $.get(appConfig.RefreshUrl);
+            }).on('click', function (event) {
+                if ($(event.target).attr("data-application") === 'logout' || $(event.target).closest('[data-application="logout"]').length > 0) {
+                    $(document).trigger(LOGOUT_EVENT);
+                }
+            });
+        }
+    }
+
+    var GetControllerActions = function (controller) {
+        actions = {};
+        $.each(controller, function (index, action) {
+            var actionObj = {
+                name: action.Name,
+                url: action.Url
+            };
+            if (action.IsPage === true) {
+                actionObj.load = function (data) {
+                    $.GoToLink(action.Url, data);
+                }
+            } else if (action.IsPost === true) {
+                actionObj.post = function (data) { return $.post(action.Url, data); }
+            } else {
+                actionObj.get = function (data) { return $.get(action.Url, data); };
+                actionObj.load = function ($el, data) { return $el.LoadView(action.Url, data); };
+                actionObj.modal = function (options) {
+                    options = $.extend(options || {}, { url: action.Url })
+                    $.ApplicationModal.show(options);
+                };
+            }
+            actions[action.Action] = actionObj;
+        });
+        return actions;
+    };
+
+    var GetControllerControllers = function (controllersData) {
+        controllers = {};
+        $.each(controllersData, function (name, controller) {
+            controllers[name] = GetControllerActions(controller);
+        });
+        return controllers;
+    };
+    var GetAreas = function () {
+        areas = {};
+        $.each(appConfig.SiteMap.Areas, function (name, area) {
+            areas[name] = GetControllerControllers(area);
+        });
+        return areas;
+    };
+
+    var InitSiteMapHelpers = function () {
+        $.Areas = GetAreas();
+        $.Controllers = GetControllerControllers(appConfig.SiteMap.Controllers);
+    };
+
+
+
+    $.fn.LoadView = function (url, data, done) {
+
+        var container = $(this);
+        var __LoadViewComplete = function (html) {
+            container.html(html);
+            if (typeof done === 'function') {
+                done();
+            }
+        };
+        if (typeof (url) === 'function') {
+            url(data).done(__LoadViewComplete);
+        } else if (typeof (url) === 'string') {
+            $.get(url).done(__LoadViewComplete);
+        }
+    };
+    $._InitSelfContainedAjaxForms = function () {
+        var selfContainedAjaxForms = $('form[data-ajax="true"][data-ajax-self-contained="true"],form[data-ajax="true"][data-ajax-self-contained="True"]');
+        selfContainedAjaxForms._InitSelfContainedAjaxForm();
+    };
+    $.fn._InitSelfContainedAjaxForm = function () {
+        $.each(this, function (index, form) {
+            var $formEl = $(form);
+            var data = $formEl.data();
+            if (data.dataAjaxSelfContainedInit === true) {
+                return;
+            }
+            data.dataAjaxSelfContainedInit = true;
+            var container = $formEl.parent();
+            var allowSubmit = true;
+            var reset = function () {
+                $formEl.off('submit');
+                $formEl.submit(function (event) {
+                    if (allowSubmit === true) {
+                        // Stop form from submitting normally
+                        event.preventDefault();
+                        // Get some values from elements on the page:
+                        allowSubmit = false;
+
+                        // Send the data using post
+                        var posting = $.post($formEl.attr('action'), $formEl._serializeToJson());
+
+                        // Put the results in a div
+                        posting.done(function (response) {
+                            if (response.hasHtml === true) {
+                                $formEl.replaceWith(response.html);
+                                $._InitSelfContainedAjaxForms();
+                            }
+                            if (response.error === true) {
+                                container.trigger('ajax-error', response.message);
+                            } else {
+                                container.trigger('ajax-success', response.message);
+                            }
+
+                            allowSubmit = false;
+                            reset();
+                        });
+                    }
+
+                });
+            };
+            reset();
+        });
+    };
+    $._InitSelfContainedAjaxForms();
+    InitAuthenticatedTimeout();
+    InitApplicationModal();
+    InitSiteMapHelpers();
+
+</script>

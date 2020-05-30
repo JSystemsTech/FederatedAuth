@@ -1,0 +1,226 @@
+﻿@mixin page-sidebar($SideMenuWidth) {
+    display: flex;
+    width: 100%;
+
+    .sidebar-header {
+        background-color: $SideMenuColor;
+        color: color-yiq($SideMenuColor);
+        padding-top: 0.7rem;
+    }
+
+    .page-sidebar-menu {
+        transition: all 0.3s;
+        background-color: $SideMenuColorSecondary;
+        color: color-yiq($SideMenuColorSecondary);
+        border-right: 1px solid $SideMenuColor;
+        width: $SideMenuWidth;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 999;
+    }
+
+    .page-sidebar-toggle-wrapper,
+    .page-content {
+        transition: all 0.3s ease;
+    }
+
+    .page-content {
+        padding-left: #{$SideMenuWidthOffset}px;
+        height: 100%;
+
+        > *:not(footer) {
+            height: 100%;
+        }
+
+        > footer {
+            margin-left: -#{$SideMenuWidthOffset}px;
+        }
+    }
+
+    .page-sidebar-toggle-wrapper {
+        z-index: 999;
+        position: fixed;
+        top: 0;
+        left: 0;
+        opacity: 0.75;
+
+        .page-sidebar-toggle {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            transition: all 0.3s ease;
+            padding-left: 0.2em;
+            padding-right: 0.2em;
+            padding-top: 3em;
+            padding-bottom: 3em;
+            box-shadow: none;
+            background-color: lighten($SideMenuColorSecondary,10%);
+            color: color-yiq(lighten($SideMenuColor,10%));
+            border: 1px solid $SideMenuColor;
+            border-left: 0;
+
+            &:hover, &:focus {
+                box-shadow: none;
+                padding-left: 0.4em;
+                padding-right: 0.4em;
+                border: 1px solid $SideMenuColor;
+            }
+        }
+    }
+
+
+    .sidebar-body {
+        background-color: $SideMenuColorSecondary;
+        color: color-yiq($SideMenuColorSecondary);
+        height: 100vh;
+
+        .sidebar-body-item {
+            &:not(.submenu):hover {
+                background-color: darken($SideMenuColorSecondary, 5%);
+                color: color-yiq(darken($SideMenuColorSecondary, 5%));
+            }
+
+            a {
+                display: block;
+                color: darken(color-yiq($SideMenuColorSecondary), 10%);
+
+                &:hover, &:focus {
+                    color: darken(color-yiq($SideMenuColorSecondary), 25%);
+                }
+            }
+
+            &.submenu {
+                background-color: darken($SideMenuColorSecondary, 10%);
+                color: color-yiq(darken($SideMenuColorSecondary, 10%));
+
+                a {
+                    color: darken(color-yiq(darken($SideMenuColorSecondary, 10%)), 10%);
+
+                    &:hover, &:focus {
+                        color: darken(color-yiq(darken($SideMenuColorSecondary, 10%)), 25%);
+                    }
+                }
+            }
+        }
+    }
+
+    @each $color, $value in $theme-colors {
+        $ThemeSideMenuColor: $value;
+
+        &.page-sidebar-#{$color}-transparent {
+            .sidebar-header {
+                background-color: $ThemeSideMenuColor;
+                color: color-yiq($ThemeSideMenuColor);
+            }
+
+            .page-sidebar-menu {
+                background-color: rgba($SideMenuColorSecondary,0.95);
+                color: color-yiq($SideMenuColorSecondary);
+                border-right: 1px solid $ThemeSideMenuColor;
+            }
+
+            .page-sidebar-toggle {
+                background-color: lighten($SideMenuColorSecondary,10%);
+                color: color-yiq(lighten($ThemeSideMenuColor,10%));
+                border: 1px solid $ThemeSideMenuColor;
+                border-left: 0;
+            }
+
+            .sidebar-body {
+                background-color: rgba(0,0,0,0);
+                color: color-yiq($SideMenuColorSecondary);
+
+                .sidebar-body-item {
+                    &:not(.submenu):hover {
+                        background-color: rgba(darken($SideMenuColorSecondary, 15%), 0.8);
+                        color: color-yiq(darken($SideMenuColorSecondary, 5%));
+                    }
+
+                    a {
+                        color: darken(color-yiq($SideMenuColorSecondary), 10%);
+
+                        &:hover, &:focus {
+                            color: darken(color-yiq($SideMenuColorSecondary), 25%);
+                        }
+                    }
+
+                    &.submenu {
+                        background-color: rgba(darken($SideMenuColorSecondary, 10%),0.8);
+                        color: color-yiq(darken($SideMenuColorSecondary, 10%));
+
+                        a {
+                            color: darken(color-yiq(darken($SideMenuColorSecondary, 10%)), 10%);
+
+                            &:hover, &:focus {
+                                color: darken(color-yiq(darken($SideMenuColorSecondary, 10%)), 25%);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        &.page-sidebar-#{$color} {
+            .sidebar-header {
+                background-color: $ThemeSideMenuColor;
+                color: color-yiq($ThemeSideMenuColor);
+            }
+
+            .page-sidebar-menu {
+                border-right: 1px solid $ThemeSideMenuColor;
+            }
+
+            .page-sidebar-toggle {
+                color: color-yiq(lighten($ThemeSideMenuColor,10%));
+                border: 1px solid $ThemeSideMenuColor;
+                border-left: 0;
+            }
+        }
+    }
+
+    &:not(.show) .page-sidebar-menu {
+        margin-left: -$SideMenuWidth;
+    }
+
+
+    &.show {
+        .page-sidebar-toggle-wrapper {
+            margin-left: $SideMenuWidth;
+        }
+    }
+}
+
+
+
+// Responsive containers that are 100% wide until a breakpoint
+@mixin page-sidebar-width($width) {
+    &:not(.show) .page-sidebar-menu {
+        margin-left: -$width;
+    }
+
+    &.show {
+        /*.page-content {
+            margin-left: $width + $SideMenuWidthOffset;
+        }*/
+        .page-sidebar-toggle-wrapper {
+            margin-left: $width;
+        }
+    }
+
+    .page-sidebar-menu {
+        width: $width;
+    }
+}
+
+@mixin media-breakpoint-until($name, $breakpoints: $grid-breakpoints) {
+    $max: breakpoint-min($name, $breakpoints);
+
+    @if $max {
+        @media (max-width: $max - 1) {
+            @content;
+        }
+    }
+    @else {
+        @content;
+    }
+}

@@ -1,0 +1,44 @@
+﻿@model FederatedIPWeb.Models.FlexLogin
+<h1>Flex Authentication</h1>
+<div class="row bg-secondary text-white border">
+    <div class="col-2">Name</div>
+    <div class="col-2">Email</div>
+    <div class="col-2">Roles</div>
+    <div class="col-2">Groups</div>
+    <div class="col-2">Site</div>
+    <div class="col-2"></div>
+
+</div>
+@foreach (FederatedIPWeb.Models.FlexUser user in Model.Users)
+{
+    <div class="row mb-2 border-bottom border-left border-right align-items-center">
+        <div class="col-2">@user.Name</div>
+        <div class="col-2">@user.Email</div>
+
+        <div class="col-2">
+            <ul class="list-group @(user.Roles.Any() ? "drop-shadow-secondary-1 my-2" : "")">
+                @foreach (string role in user.Roles)
+                {
+                    <li class="list-group-item">@role</li>
+                }
+            </ul>
+        </div>
+        <div class="col-2">
+            <ul class="list-group @(user.Groups.Any() ? "drop-shadow-secondary-1 my-2" : "")">
+                @foreach (string group in user.Groups)
+                {
+                    <li class="list-group-item">@group</li>
+                }
+            </ul>
+        </div>
+        <div class="col-2">
+            <ul class="list-group @(user.Sites.Any() ? "drop-shadow-secondary-1 my-2" : "")">
+                @foreach (string site in user.Sites)
+                {
+                    <li class="list-group-item">@site</li>
+                }
+            </ul>
+        </div>
+        <div class="col-2"><a class="btn btn-primary" href="@Url.Action("FlexAuthSignIn","Home", new { user.UserId, Model.ReturnUrl})">Login</a></div>
+    </div>
+}

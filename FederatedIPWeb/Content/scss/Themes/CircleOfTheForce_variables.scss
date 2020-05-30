@@ -1,0 +1,24 @@
+﻿
+@import url(https://fonts.googleapis.com/css?family=Raleway:200,300,400,700);
+$font-family-base: Raleway;
+@import url(https://fonts.googleapis.com/css?family=Quicksand:200,300,400,700);
+$headings-font-family: Quicksand;
+
+$primary: #ffad02;
+$secondary: #853C05;
+$success: #FEC100;
+$danger: #be8d69;
+$info: #68a2b5;
+$warning: #c0c0c0;
+$light: #FFFCE6;
+$dark: #555555;
+$enable-gradients: true;
+$enable-shadows: true;
+$spacer: 0.7rem;
+$border-width: 1px;
+$btn-border-radius: 1.35rem;
+
+$enable-border-shadows: true;
+$drop-shadow-sizes: () !default;
+// stylelint-disable-next-line scss/dollar-variable-default
+$drop-shadow-sizes: map-merge( ( "1": 5px, "2": 15px, "3": 25px, "4": 50px, "5": 75px), $drop-shadow-sizes );

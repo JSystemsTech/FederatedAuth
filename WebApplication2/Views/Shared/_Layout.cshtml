@@ -1,0 +1,137 @@
+﻿@using WebApplication2.App_Start;
+@using SharedServices.Configuration
+@{
+    IConfigurationService ApplicationConfiguration = ViewBag.__ApplicationConfiguration;
+    bool AuthorizedPage = ViewBag.__AuthorizedPage == true;
+    bool EnableSideMenuForPage = ApplicationConfiguration.WebPageConfiguration.EnableSideMenu && ViewBag.EnableSideMenu != false;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ApplicationConfiguration.WebPageConfiguration.Title</title>
+    @CustomWebOptimization.RenderStyleBundle("css")
+    @CustomWebOptimization.RenderScriptBundle("modernizr")
+</head>
+<body>
+    @{
+        Html.RenderPartial("ApplicationHeader");
+    }
+    <main>
+        @if (EnableSideMenuForPage && AuthorizedPage)
+        {
+            <div class="page-sidebar-lg  page-sidebar-xl-6 page-sidebar-primary-transparent page-sidebar-fixed" data-toggle="sidebar">
+                <nav class="page-sidebar-toggle-wrapper">
+                    <button type="button" class="btn page-sidebar-toggle">
+                        <span><i class="fa fa-chevron-right"></i></span>
+                        <span class="sr-only">Toggle side menu</span>
+                    </button>
+                </nav>
+                <!-- Sidebar -->
+                <nav class="page-sidebar-menu">
+                    <div class="container-fluid page-sidebar-menu-content">
+                        @{
+                            Html.RenderPartial("SideMenu");
+                        }
+                    </div>
+                </nav>
+
+                <!-- Page Content -->
+                <div class="page-content w-100 pt-5">
+                    <div class="container-fluid w-100">
+                        @RenderBody()
+                    </div>
+                    @{
+                        Html.RenderPartial("ApplicationFooter");
+                    }
+                </div>
+
+            </div>
+        }
+        else
+        {
+            <div class="container-fluid pt-5">
+                @RenderBody()
+            </div>
+            Html.RenderPartial("ApplicationFooter");
+        }
+
+
+    </main>
+
+
+
+    @CustomWebOptimization.RenderScriptBundle("jquery")
+    @CustomWebOptimization.RenderScriptBundle("bootstrap")
+    @{
+        Html.RenderPartial("_LayoutAjaxHandler");
+    }
+    @if (EnableSideMenuForPage && AuthorizedPage)
+    {
+        <script type="text/javascript">
+            $.fn._initPageSidebar = function () {
+                var sidebar = $(this);
+                var sidebarPageContent = sidebar.find('.page-content');
+                var sidebarToggleWrapper = sidebar.find('.page-sidebar-toggle-wrapper');
+                var sidebarToggle = sidebar.find('.page-sidebar-toggle');
+                var sidebarMenu = sidebar.find('.page-sidebar-menu');
+                var toggle = function () { sidebar.toggleClass('show'); };
+                var close = function () { sidebar.removeClass('show'); };
+                sidebarToggle.on('click', toggle);
+                $(document).on('click', function (e) {
+                    var $el = $(e.target);
+                    if ($el.closest('[data-toggle="sidebar"]').length <= 0 || $el.closest('.page-content').is(sidebarPageContent)) {
+                        close();
+                    }
+                });
+                var fixedHeader = $('body > header.fixed-top');
+                if (fixedHeader.length > 0) {
+                    var autoAdjustTopPadding = function () {
+                        var headerHeight = fixedHeader.outerHeight(true);
+                        sidebarPageContent.css('margin-top', '');
+                        sidebarToggle.css('margin-top', '');
+                        sidebarToggle.css('max-height', '');
+                        sidebarMenu.css('margin-top', headerHeight + 'px');
+                        if (sidebarToggleWrapper.css('position') === 'fixed') {
+                            sidebarToggle.css('margin-top', headerHeight + 'px');
+                            sidebarToggle.css('max-height', 'calc(100vh - ' + headerHeight + 'px)');
+                            sidebarPageContent.css('margin-top', headerHeight + 'px');
+                        }
+                    };
+
+                    $(window).resize(autoAdjustTopPadding);
+                    autoAdjustTopPadding();
+                }
+
+            };
+            $(document).ready(function () {
+                $('[data-toggle="sidebar"]')._initPageSidebar();
+            });
+        </script>
+    }
+    else
+    {
+        <script type="text/javascript">
+            $.fn._initPageSidebar = function () {
+                var fixedHeader = $('body > header.fixed-top');
+                var content = $('main');
+                if (fixedHeader.length > 0) {
+                    var autoAdjustTopPadding = function () {
+                        var headerHeight = fixedHeader.outerHeight(true);
+                        content.css('margin-top', headerHeight + 'px');
+                    };
+
+                    $(window).resize(autoAdjustTopPadding);
+                    autoAdjustTopPadding();
+                }
+
+            };
+            $(document).ready(function () {
+                $('[data-toggle="sidebar"]')._initPageSidebar();
+            });
+        </script>
+    }
+    @RenderSection("scripts", required: false)
+</body>
+</html>

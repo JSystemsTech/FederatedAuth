@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+    <div class="row">
+        <div class="col-12">
+            <button id="RequestForbidden" type="button" class="btn btn-danger">Request Forbidden</button>
+        </div>
+    </div>
+<div class="row">
+    <div class="col-12">
+        <h2>@ViewBag.Title.</h2>
+        <h3>@ViewBag.Message</h3>
+
+        <p>Use this area to provide additional information.</p>
+    </div>
+
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            var RequestForbiddenPartialView = function () {
+                $.get("/Dashboard/MyPartial", function (data) {
+                    alert("Load was performed.");
+                });
+            };
+            $('#RequestForbidden').on('click', RequestForbiddenPartialView);
+        });
+    </script>
+}
+

@@ -1,0 +1,13 @@
+﻿@model WebApplication2.Models.MyFormVM
+@using SharedServices.Web.Helpers
+@using SharedServices.Web.Extensions.HtmlHelper.FormControl
+    <div class="row">
+
+        <div class="col-12">
+            @{Html.RenderPartial("MyFormPartial", Model);
+            }
+        </div>
+
+    </div>
+
+

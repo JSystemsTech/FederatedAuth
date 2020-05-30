@@ -1,0 +1,52 @@
+﻿@import "_variables.scss";
+@import "_mixins.scss";
+
+.form-control-label,
+.custom-control-label,
+.form-check-label {
+    font-size: 0.75em;
+    font-weight: bold;
+
+    &.required:after {
+        content: "*";
+        padding-left: 0.25rem;
+        color: #fd7e14;
+    }
+}
+
+.custom-control-label,
+.form-check-label {
+    padding-top: 2px;
+}
+
+@each $size-name, $size in $drop-shadow-sizes {
+    .drop-shadow-#{$size-name} {
+        @include bs-more-box-shadow($gray-400, $size);
+    }
+}
+
+@each $color, $value in $theme-colors {
+    .jumbotron-#{$color} {
+        @include bs-more-jumbotron($value);
+    }
+
+    .drop-shadow-#{$color} {
+        @include bs-more-box-shadow($value, 25px);
+    }
+
+    @each $size-name, $size in $drop-shadow-sizes {
+        .drop-shadow-#{$color}-#{$size-name} {
+            @include bs-more-box-shadow($value, $size);
+        }
+    }
+
+    $card-color: lighten($value, 20%);
+
+    .card-#{$color} {
+        @include bs-more-card($card-color);
+
+        &.transparent {
+            @include bs-more-card($card-color, 0.5);
+        }
+    }
+}

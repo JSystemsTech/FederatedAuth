@@ -1,0 +1,4 @@
+﻿$enable-border-shadows: true;
+$drop-shadow-sizes: () !default;
+// stylelint-disable-next-line scss/dollar-variable-default
+$drop-shadow-sizes: map-merge( ( "1": 5px, "2": 15px, "3": 25px, "4": 50px, "5": 75px), $drop-shadow-sizes );

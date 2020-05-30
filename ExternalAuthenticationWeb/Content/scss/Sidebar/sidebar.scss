@@ -1,0 +1,130 @@
+﻿@import "_variables.scss";
+@import "_mixins.scss";
+
+
+@each $breakpoint, $container-max-width in $container-max-widths {
+    $default-width: $page-sidebar-width-default-interval/ $page-sidebar-width-intervals;
+
+    .page-sidebar#{breakpoint-infix($breakpoint, $grid-breakpoints)} {
+        @include page-sidebar($container-max-width * ( $default-width))
+    }
+
+    @include media-breakpoint-up($breakpoint) {
+
+
+        %up-page-sidebar-#{$breakpoint} {
+            .page-sidebar-toggle {
+                height: 100vh;
+            }
+        }
+
+        @each $name, $width in $grid-breakpoints {
+            @if ($container-max-width > $width or $breakpoint == $name) {
+
+                .page-sidebar#{breakpoint-infix($breakpoint, $grid-breakpoints)} {
+                    @extend %up-page-sidebar-#{$breakpoint};
+                }
+
+                @for $interval from 1 to $page-sidebar-width-intervals + 1 {
+                    .page-sidebar#{breakpoint-infix($breakpoint, $grid-breakpoints)}-#{$interval} {
+                        @include page-sidebar-width($container-max-width * ( $interval/ $page-sidebar-width-intervals))
+                    }
+                }
+            }
+        }
+    }
+
+    @include media-breakpoint-until($breakpoint, $grid-breakpoints) {
+        .page-sidebar#{breakpoint-infix($breakpoint, $grid-breakpoints)} {
+            .page-sidebar-menu {
+                margin-left: 0;
+                height: 100vh;
+            }
+
+            &:not(.show) .page-sidebar-menu {
+                margin-left: -$default-width;
+                height: 0;
+                min-height: 0;
+                transform: scaleY(0);
+                transition: transform 0.3s ease;
+                transition: all 0.3s ease;
+            }
+
+            flex-direction: column;
+
+            .page-sidebar-menu,
+            .page-sidebar-toggle-wrapper {
+                display: flex;
+                margin-left: 0 !important;
+                position: relative;
+            }
+
+            .page-sidebar-menu {
+                width: 100%;
+                height: unset;
+                min-height: 200px;
+                /*height: 100%;*/
+                transform: scaleY(1);
+                order: 0;
+                min-width: unset;
+                max-width: unset;
+                min-height: unset;
+                overflow-y: hidden;
+                transition: transform 0.3s ease;
+                -moz-transition: all 0.3s ease;
+                -webkit-transition: all 0.3s ease;
+                -o-transition: all 0.3s ease;
+                transition: all 0.3s ease;
+
+                .page-sidebar-menu-content {
+                    width: 100%;
+                    height: 100%;
+                    transition: all 0.3s ease;
+                }
+
+                .sidebar-body {
+                    height: 100%;
+                }
+            }
+
+            .page-sidebar-toggle-wrapper {
+                width: 100%;
+                order: 1;
+                min-width: unset;
+                max-width: unset;
+                min-height: unset;
+                transition: all 0.3s ease;
+
+                .page-sidebar-toggle {
+                    border-top-right-radius: 0;
+                    border-bottom-left-radius: 1.2rem;
+                    border-bottom-right-radius: 1.2rem;
+                    padding-left: 0.2em;
+                    padding-right: 0.2em;
+                    padding-top: 0.1em;
+                    padding-bottom: 0.1em;
+                    width: 100%;
+
+                    &:hover, &:focus {
+                        padding-left: 0.2em;
+                        padding-right: 0.2em;
+                        padding-top: 0.4em;
+                        padding-bottom: 0.4em;
+                    }
+                }
+            }
+
+            .page-content {
+                order: 2;
+                margin-left: 0 !important;
+                padding-left: 10px;
+                padding-right: 10px;
+
+                footer {
+                    margin-left: -10px;
+                    margin-right: -10px;
+                }
+            }
+        }
+    }
+}

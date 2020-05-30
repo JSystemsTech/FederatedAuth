@@ -1,0 +1,60 @@
+﻿@using WebApplication2.App_Start;
+@using SharedServices.Configuration
+@using SharedServices.FederatedAuth.Principal
+@{
+    IConfigurationService ApplicationConfiguration = ViewBag.__ApplicationConfiguration;
+    bool showLogout = ViewBag.__IsAuthenticatedPage == true;
+    IFederatedIPUser user = ViewBag.__User;
+}
+<header class="fixed-top">
+    <nav class="navbar navbar-expand-lg bg-light text-primary border-bottom border-primary">
+
+        <a class="navbar-brand" href="#"><h3>@ApplicationConfiguration.WebPageConfiguration.Title</h3></a>
+        <button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span><i class="fa fa-hamburger"></i></span>
+        </button>
+
+        <div class="navbar-collapse  collapse" id="navbarToggle">
+            <ul class="navbar-nav w-100">
+                <li class="nav-item">
+                    @Html.ActionLink("Home", "Index", "Home", new { }, new { @class = "nav-link py-1" })
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("About", "About", "Home", new { }, new { @class = "nav-link py-1" })
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("Contact", "Contact", "Home", new { }, new { @class = "nav-link py-1" })
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("My Form", "MyForm", "Home", new { }, new { @class = "nav-link py-1" })
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("Admin", "Admin", "Dashboard", new { }, new { @class = "nav-link py-1" })
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("Manager", "Manager", "Dashboard", new { }, new { @class = "nav-link py-1" })
+                </li>
+                <li class="nav-item">
+                    @Html.ActionLink("Supervisor", "Supervisor", "Dashboard", new { }, new { @class = "nav-link py-1" })
+                </li>
+                @if (showLogout)
+                {
+                    <li class="nav-item ml-auto">
+                        <div class="nav-link py-1">
+                            <span aria-hidden="true"><i class="fa fa-user-circle"></i></span>
+                            <span class="pl-1">@user.Name</span>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <button type="button" class="btn btn-link nav-link py-1" data-application="logout">
+                            <span aria-hidden="true"><i class="fa fa-sign-out-alt"></i></span>
+                            <span class="pl-1">Logout</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+        </div>
+    </nav>
+
+
+</header>

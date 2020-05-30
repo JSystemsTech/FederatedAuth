@@ -1,0 +1,28 @@
+﻿@model ExternalAuthenticationWeb.Models.UserAuth
+@using SharedServices.Web.Extensions.HtmlHelper.Bootstrap4FormControl
+<div class="row h-100">
+    <div class="col-12 col-xl-4 mx-xl-auto my-auto">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Login</div>
+            </div>
+            <div class="card-body">
+                @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(m => m.ReturnUrl)
+                    <div class="form-row">
+                        <div class="col-12">
+                            @Html.BootstrapEmailInputFormControlFor(m => m.Email).AddCustomLabelAndValidation()
+                        </div>
+                    </div>
+                    <div class="form-row mt-2">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary w-100">Submit</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

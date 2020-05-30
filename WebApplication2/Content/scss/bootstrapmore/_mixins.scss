@@ -1,0 +1,53 @@
+﻿@mixin bs-more-card($color, $transparency: 1) {
+    $card-color: $color;
+    $card-solid-color: $color;
+
+    @if($transparency < 1) {
+        $card-color: rgba($card-color, $transparency);
+        background-color: rgba(#ffffff, 0);
+
+        .card-body {
+            background-color: rgba(#ffffff, $transparency);
+        }
+    }
+    @else {
+        background-color: $card-color;
+
+        .card-body {
+            background-color: #ffffff;
+        }
+    }
+
+    border-color: darken($card-color, 10%);
+
+
+    .card-header, .card-footer, .card-body {
+        border-color: darken($card-solid-color, 10%);
+    }
+
+    .card-header {
+        background-color: $card-color;
+        color: color-yiq($card-solid-color);
+    }
+
+    .card-footer {
+        background-color: $card-color;
+        color: color-yiq($card-solid-color);
+    }
+
+    @if($enable-border-shadows) {
+        @include bs-more-box-shadow($card-solid-color, 25px);
+    }
+}
+
+@mixin bs-more-box-shadow($color, $size) {
+    box-shadow: 0 0 $size $size/2 rgba(mix(color-yiq($color), $color, 15%), .5);
+}
+
+@mixin bs-more-jumbotron($jumbotron-color: #ffffff) {
+    background-color: $jumbotron-color;
+
+    &.transparent {
+        background-color: rgba($jumbotron-color, 0.5);
+    }
+}

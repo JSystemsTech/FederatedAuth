@@ -1,0 +1,81 @@
+﻿@model WebApplication2.Models.MyFormVM
+@using SharedServices.Web.Helpers
+@using SharedServices.Web.Extensions.HtmlHelper.FormControl
+@using SharedServices.Web.Extensions.HtmlHelper.Bootstrap4FormControl
+
+@using (Ajax.BeginForm("MyFormPartial", "Home", null, new AjaxOptions
+{
+    HttpMethod = "POST",
+    OnSuccess = "SuccessMessage",
+    OnFailure = "FailMessage",
+    UpdateTargetId = "resultTarget"
+}, new { @id = "MyFormPartial", @data_ajax_self_contained = true , @data_ajax_id= Guid.NewGuid()}))
+{
+
+
+@Html.AntiForgeryToken()
+<div class="form-row">
+    <div class="col-12">
+        @Html.BootstrapValidatonSummary()
+    </div>
+</div>
+<div class="form-row">
+
+
+    @*<div class="col-6">
+            @Html.LabelFor(m => m.MyTextInput, new { @class = "mb-0 bs-form-control-label" })
+            <div class="bs-form-control-group bs-form-control-round">
+                <div class="bs-form-control-group-prepend bs-form-control-bg-status">
+                    $
+                </div>
+                @Html.TextInputFormControlFor(m => m.MyTextInput, new { @class = "bs-form-control bs-form-control-flush" })
+                <button tabindex="0" aria-label="clear input" type="button" class="bs-form-control-group-append bs-form-control-clear bs-form-control-flush">x</button>
+
+            </div>
+            @Html.ValidationMessageFor(m => m.MyTextInput, null, new { @class = "mb-0 bs-form-control-text-invalid bs-form-control-text" })
+
+            <button type="submit" class="btn btn-primary">Submit Ajax Form</button>
+        </div>*@
+
+    <div class="col-6">
+        @Html.BootstrapTextInputFormControlFor(m => m.MyTextInput).AddLabelAndValidation()
+    </div>
+    <div class="col-6">
+        @Html.BootstrapNumberInputFormControlFor(m => m.Price).AddLabelAndValidation()
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-12">
+        @Html.BootstrapTextInputFormControlFor(m => m.MyNestedItem.Text).AddLabelAndValidation()
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-12">
+        @Html.BootstrapSingleSelectFormControlFor(m => m.MySelect, Model.MySelections.ToSelectList(i => i.Number, i => i.Display, i => Model.MySelect == i.Number)).AddLabelAndValidation()
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-12">
+       @* @Html.BootstrapTextAreaFormControlFor(m => m.MyTextInput).AddLabelAndValidation()*@
+    </div>
+</div>
+<div class="form-row">
+    <div class="col-12">
+        @*@Html.BootstrapCheckboxFor(m => m.MyCheckbox)*@
+        @*@Html.BootstrapCustomCheckboxFor(m => m.MyCheckbox)*@
+        @*@Html.BootstrapSwitchCheckboxFor(m => m.MyCheckbox)*@
+        @Html.BootstrapSwitchRadioFor(m => m.MyCheckbox, new { @id = "Radio1" }, "my radio value", "val 1")
+        @Html.BootstrapSwitchRadioFor(m => m.MyCheckbox, new { @id = "Radio2" }, "my radio value 2", "val 2")
+        @Html.BootstrapSwitchRadioFor(m => m.MyCheckbox, new { @id = "Radio3" }, "my radio value 3", "val 3")
+
+        @Html.BootstrapCustomRadioSelectFor(m => m.MySelect, Model.MySelections.ToSelectList(i => i.Number, i => i.Display, i => Model.MySelect == i.Number), true)
+    </div>
+</div>
+
+
+<div class="form-row">
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Submit Ajax Form</button>
+    </div>
+</div>
+}

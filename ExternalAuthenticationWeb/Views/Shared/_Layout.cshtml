@@ -1,0 +1,29 @@
+﻿@using ExternalAuthenticationWeb.App_Start;
+
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>External Authentication</title>
+    @CustomWebOptimization.RenderStyleBundle("css")
+    @CustomWebOptimization.RenderScriptBundle("modernizr")
+</head>
+<body class="h-100">
+    <main class="h-100">
+        
+            <div class="container h-100">
+                @RenderBody()
+            </div>
+        
+
+
+    </main>
+
+
+
+    @CustomWebOptimization.RenderScriptBundle("jquery")
+    @CustomWebOptimization.RenderScriptBundle("bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
