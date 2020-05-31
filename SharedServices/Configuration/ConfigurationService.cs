@@ -1,4 +1,5 @@
 ﻿using SharedServices.Configuration.Models;
+using SharedServices.Email;
 using SharedServices.Extensions;
 using SharedServices.FederatedAuth;
 using System;
@@ -21,5 +22,6 @@ namespace SharedServices.Configuration
         public FederatedIPAuthentication FederatedIPAuthentication { get => UsingFederatedAuth ? new FederatedIPAuthentication(GetSection("federatedAuthSettings")) : null; }
 
         public WebPageConfiguration WebPageConfiguration { get => HasSection("webPageSettings") ? new WebPageConfiguration(GetSection("webPageSettings")) : new WebPageConfiguration(); }
+        public IEmailService EmailService { get => HasSection("emailServiceSettings") ? new EmailManager(new EmailServiceConfig(GetSection("emailServiceSettings"))) : null; }
     }
 }

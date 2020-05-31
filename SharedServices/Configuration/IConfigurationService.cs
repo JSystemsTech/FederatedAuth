@@ -1,4 +1,5 @@
 ﻿using SharedServices.Configuration.Models;
+using SharedServices.Email;
 using SharedServices.FederatedAuth;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,7 @@ namespace SharedServices.Configuration
         bool UsingFederatedAuth { get; }
         FederatedIPAuthentication FederatedIPAuthentication { get; }
         WebPageConfiguration WebPageConfiguration { get; }
+        IEmailService EmailService { get; }
 
     }
 }
