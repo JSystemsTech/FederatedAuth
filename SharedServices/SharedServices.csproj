@@ -164,6 +164,8 @@
     <Compile Include="Web\Extensions\HtmlHelper\FormControl\MultiSelectListForExtensions.cs" />
     <Compile Include="Web\Extensions\HtmlHelper\FormControl\SingleSelectListForExtensions.cs" />
     <Compile Include="Web\Extensions\HtmlHelper\FormControl\TextareaFormControlForExtensions.cs" />
+    <Compile Include="Web\Extensions\HtmlHelper\SideMenu\Item.cs" />
+    <Compile Include="Web\Extensions\HtmlHelper\SideMenu\SubMenuItem.cs" />
     <Compile Include="Web\Extensions\HtmlHelper\TemplateExtensions.cs" />
     <Compile Include="Web\Extensions\ModelStateExtensions.cs" />
     <Compile Include="Web\Extensions\StringExtensions.cs" />

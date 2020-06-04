@@ -31,9 +31,16 @@
                 <!-- Sidebar -->
                 <nav class="page-sidebar-menu">
                     <div class="container-fluid page-sidebar-menu-content">
-                        @{
-                            Html.RenderPartial("SideMenu");
-                        }
+                        <div class="sidebar-header row border-bottom" data-sidebar="header">
+                            <div class="col-12">
+                                @RenderSection("SideMenuHeader", required: false)
+                            </div>
+                        </div>
+                        <div class="sidebar-body row" data-sidebar="body">
+                            <div class="col-12">
+                                @RenderSection("SideMenuBody", required: false)
+                            </div>
+                        </div>
                     </div>
                 </nav>
 

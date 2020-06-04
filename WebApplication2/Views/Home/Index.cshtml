@@ -1,28 +1,29 @@
-﻿@{
+﻿@using SharedServices.Web.Extensions.HtmlHelper.SideMenu
+@{
     ViewBag.Title = "Home Page";
 }
 
-    <div class="jumbotron transparent drop-shadow-primary-4 text-center">
-        <p>
-            Ballance is Irrelevant, there is only Influence.
-        </p>
-        <p>
-            Through Influence we gain Knowlage.
-        </p>
-        <p>
-            Through Knowlage we gain Wisdom.
-        </p>
-        <p>
-            Through Wisdom we are Enlightened.
-        </p>
-        <p>
-            When Enlightened we gain Influance.
-        </p>
-        <p>
-            We follow the Circle of the Force.
-        </p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-    </div>
+<div class="jumbotron transparent drop-shadow-primary-4 text-center">
+    <p>
+        Ballance is Irrelevant, there is only Influence.
+    </p>
+    <p>
+        Through Influence we gain Knowlage.
+    </p>
+    <p>
+        Through Knowlage we gain Wisdom.
+    </p>
+    <p>
+        Through Wisdom we are Enlightened.
+    </p>
+    <p>
+        When Enlightened we gain Influance.
+    </p>
+    <p>
+        We follow the Circle of the Force.
+    </p>
+    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+</div>
 <div class="row">
     <div class="col-12">
     </div>
@@ -45,8 +46,8 @@
                 <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
             </div>
         </div>
-        
-        
+
+
     </div>
     <div class="col-md-4">
         <div class="card card-primary transparent box-shadow-primary">
@@ -69,3 +70,23 @@
         <p><a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
     </div>
 </div>
+
+
+@section SideMenuHeader
+{
+    <h3>Home Page</h3>
+    <p>This is text for home page side menu</p>
+}
+@section SideMenuBody
+{
+    @{
+        IEnumerable<SubMenuItem> subMenu1 = new SubMenuItem[3] { new SubMenuItem("Menu Item 1", "#"), new SubMenuItem("Menu Item 2"), new SubMenuItem("Menu Item 3", "#") };
+        IEnumerable<SubMenuItem> subMenu2 = new SubMenuItem[3] { new SubMenuItem("Menu Group"), new SubMenuItem("Menu Item 4","#", "fa-user-check"), new SubMenuItem("Menu Item 5", "#", "fa-user-circle") };
+
+    }
+    @Html.SideMenuLabel("Sub Menus")
+    @Html.SideMenuSubMenu("Sub Menu 1", "SubMenuExample1", subMenu1, "fa-user")
+    @Html.SideMenuSubMenu("Sub Menu 2", "SubMenuExample2", subMenu2)
+    @Html.SideMenuLabel("Links")
+    @Html.SideMenuLink("Link")
+}

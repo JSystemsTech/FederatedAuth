@@ -466,6 +466,7 @@
     <Content Include="Content\scss\Sidebar\_variables.scss" />
     <Content Include="Content\scss\Sidebar\sidebar.scss" />
     <Content Include="Content\scss\bootstrapmore\bootstrapmore.scss" />
+    <Content Include="Content\scss\bootstrapmore\_carousel.scss" />
     <None Include="Content\scss\bootstrapmore\_mixins.scss" />
     <Content Include="Content\scss\bootstrapmore\_variables.scss" />
     <None Include="Content\scss\Sidebar\_mixins.scss" />

@@ -1,7 +1,11 @@
 ﻿@import "_variables.scss";
 @import "_mixins.scss";
 
-
+.page-sidebar-menu .sidebar-body a.dropdown-toggle::after {
+    margin-left: 0;
+    float: right;
+    margin-top: 10px;
+}
 @each $breakpoint, $container-max-width in $container-max-widths {
     $default-width: $page-sidebar-width-default-interval/ $page-sidebar-width-intervals;
 
